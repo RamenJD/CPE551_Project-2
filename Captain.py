@@ -13,7 +13,7 @@ class Captain(Creature):
 
     def __init__(self, x_coord, y_coord):
         # superclass constructor is called
-        super().__init__(x_coord, y_coord, "V")
+        super().__init__(x_coord, y_coord, "\033[0;32mV\033[0m")
         # An empty list called Collection is created to store the veggies that the Captain has collected
         self.Collection = []
 

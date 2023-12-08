@@ -1,5 +1,7 @@
+import os
 import csv
 import random
+import pickle
 from Captain import Captain
 from Rabbit import Rabbit
 from Veggies import Veggies
@@ -136,7 +138,7 @@ class GameEngine:
         for i in range(len(self.__veggies)):
             print(f"{self.__veggies[i].get_symbol()}: {self.__veggies[i].get_name()} "
                   f"{self.__veggies[i].get_points()} points")
-        print("Captain Veggie is V, and the rabbits are R's.\n")
+        print("Captain Veggie is \033[0;32mV\033[0m, and the rabbits are \033[0;33mR\033[0m's.\n")
         print("Good luck!")
 
     def printfield(self):
@@ -223,11 +225,16 @@ class GameEngine:
         # The destination is Captain
         elif isinstance(self.__field[current_x + moving_x][current_y + moving_y], Captain):
             print("The snake caught you. You lost last 5 veggies!")
-            # Reduce points of the last 5 veggies
-            for i in range(len(self.__captain.Collection)-1,len(self.__captain.Collection)-6,-1):
-                self.__score -= self.__captain.Collection[i].get_points()
-            # Remove the last 5 elements from the list
-            del self.__captain.Collection[-5:]
+            # If Captain has 5 or fewer than 5 veggies, empty the collection
+            if len(self.__captain.Collection) <= 5:
+                self.__score = 0
+                self.__captain.Collection.clear()
+            # If Captain has more than 5 veggies
+            else:
+                # Reduce points of the last 5 veggies
+                for i in range(len(self.__captain.Collection) - 1, len(self.__captain.Collection) - 6, -1):
+                    self.__score -= self.__captain.Collection[i].get_points()
+                del self.__captain.Collection[-5:]
             # Clear Snake's position and re-initialize
             self.__field[current_x][current_y] = None
             self.initSnake()
@@ -322,4 +329,31 @@ class GameEngine:
         for i in range(len(self.__captain.Collection)):
             print(self.__captain.Collection[i].get_name())
         print(f"Your score was: {self.getScore()}")
-        # Highscore
+
+    def highScore(self):
+        highscores = []
+        player_name = input("Please enter your three initials to go on the scoreboard: ")
+        player_info = (player_name, self.getScore())
+        if os.path.exists("highscore.data"):
+            # Unpickle highscore.data
+            with open("highscore.data", "rb") as inFile:
+                highscores = pickle.load(inFile)
+                inserted = False
+                for i in range(len(highscores)):
+                    # If player's score is higher than any of the existing score
+                    if highscores[i][1] < player_info[1]:
+                        highscores.insert(0, player_info)
+                        inserted = True
+                        break
+                if not inserted:
+                    highscores.append(player_info)
+        else:
+            highscores.append(player_info)
+        # Output all the high scores
+        print("-----HIGH SCORES-----\n"
+              "Name\t\tScore")
+        for i in range(len(highscores)):
+            print(f"{highscores[i][0]}\t{highscores[i][1]}")
+        # Pickle highscore.data
+        with open("highscore.data", "wb") as outFile:
+            pickle.dump(highscores, outFile)

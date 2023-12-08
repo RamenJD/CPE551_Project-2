@@ -14,4 +14,4 @@ class Rabbit(Creature):
     # Subclass Rabbit that inherits from Superclass Creature to keep track of the Rabbits that eats veggies
     def __init__(self, x_coord, y_coord):
         # superclass constructor is called for the creature Rabbit with symbol R
-        super().__init__(x_coord, y_coord, "R")
+        super().__init__(x_coord, y_coord, "\033[0;33mR\033[0m")

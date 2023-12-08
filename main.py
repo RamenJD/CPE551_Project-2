@@ -14,6 +14,7 @@ def main():
         new_game.moveSnake()
         remaining_veggies = new_game.remainingVeggies()
     new_game.gameOver()
+    new_game.highScore()
 
 
 main()
